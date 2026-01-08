@@ -10,9 +10,9 @@ import processing.core.*;
  * @author FFC03
  */
 public class SketchObject {
-    private int x, y;
-    private PImage image;
-    private PApplet app;
+    public int x, y;
+    public PImage image;
+    public PApplet app;
     private boolean controllable;
     private int speed;
     public SketchObject(PApplet app, int x, int y, PImage image){

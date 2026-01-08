@@ -9,30 +9,24 @@ import processing.core.PImage;
  *
  * @author FFC03
  */
-public class Kingdom{
-    private PApplet app;
+public class Kingdom extends SketchObject{
     private PImage[] imagesBeforeTrigger, imagesAfterTrigger;
-    private PImage map;
     private Event[] keyPoints;
-    private static int x, y;
     private static Status status;
     public Kingdom(PApplet app, PImage map, PImage[] imagesBeforeTrigger, PImage[] imagesAfterTrigger, Event[] keyPoints){
-        this.app = app;
+        super(app, app.width/2, app.height/2, map);
         this.imagesBeforeTrigger = imagesBeforeTrigger; 
         this.imagesAfterTrigger = imagesAfterTrigger;
-        this.map = map;
         this.keyPoints = keyPoints;
-        x = app.width/2;
-        y = app.height/2;
         status = Status.BIRTH;
     }
     public void draw(boolean start){
         boolean triggered;
-        PImage image;
+        PImage displayedImage;
         int stage = status.ordinal();
         triggered = keyPoints[stage].getTrigger().getTriggered();
-        image = start ? triggered ? imagesAfterTrigger[stage] : imagesBeforeTrigger[stage] : map;
-        app.image(image, x, y);
+        displayedImage = start ? triggered ? imagesAfterTrigger[stage] : imagesBeforeTrigger[stage] : image;
+        app.image(displayedImage, x, y);
     }
     public void updateStatus(Status status){
         this.status = status;
