@@ -15,7 +15,7 @@ public class ThreeKingdomsLegacy {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        Game.main("threeKingdomsLegacy.Game");
+        Game.main("threekingdomslegacy.Game");
     }
     
 }

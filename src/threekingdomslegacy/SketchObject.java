@@ -28,7 +28,7 @@ public class SketchObject {
         this.y = y;
         this.image = image;
         this.controllable = controllable;
-        speed = controllable ? speed : 0;
+        this.speed = controllable ? speed : 0;
     }
     public void draw(){
         app.image(image, x, y);
