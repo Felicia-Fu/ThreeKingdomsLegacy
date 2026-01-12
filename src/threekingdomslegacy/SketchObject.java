@@ -15,6 +15,7 @@ public class SketchObject {
     public PApplet app;
     private boolean controllable;
     private int speed;
+    private static int DEFAULT_SPEED;
     public SketchObject(PApplet app, int x, int y, PImage image){
         this.app = app;
         this.x = x;
@@ -22,6 +23,13 @@ public class SketchObject {
         this.image = image;
         controllable = false;
         speed = 0;
+    }
+    public SketchObject(int x, int y, PImage image, boolean controllable){
+        this.x = x;
+        this.y = y;
+        this.image = image;
+        this.controllable = controllable;
+        this.speed = controllable ? DEFAULT_SPEED : 0;
     }
     public SketchObject(int x, int y, PImage image, boolean controllable, int speed){
         this.x = x;
@@ -38,6 +46,10 @@ public class SketchObject {
             x += speed;
             y += speed;
         }
+    }
+    public void updateControllable(boolean controllable){
+        this.controllable = controllable;
+        this.speed = controllable ? speed : 0;
     }
     
 }

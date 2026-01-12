@@ -10,15 +10,19 @@ import java.io.*;
  * @author FFC03
  */
 public class Game extends PApplet{
-    private int stage = -1;
-    private int index = 1;
-    private final int screenWidth = 700, screenHeight = 500;
-    private PFont titleFont, subtitleFont, contentFont;
-    private String username = "";
-    private String password = "";
-    private String placeholder = "";
-    private boolean finishUsername = false;
-    private int count = 0;
+    public int stage = -1;
+    public int index = 1;
+    public final int screenWidth = 700, screenHeight = 500;
+    public PFont titleFont, subtitleFont, contentFont;
+    public String username = "";
+    public String password = "";
+    public String placeholder = "";
+    public boolean finishUsername = false;
+    public int count = 0;
+    public String chosenKingdom = "";
+    public Kingdom[] kingdoms = new Kingdom[3];
+    public final int DEFAULT_STAGE = 1;
+    
     public void settings(){
         size(screenWidth, screenHeight);
     }
@@ -99,7 +103,7 @@ public class Game extends PApplet{
                         try{
                             FileWriter fw = new FileWriter("users.csv", true);
                             PrintWriter pw = new PrintWriter(fw);
-                            pw.write(username + "," + password);
+                            pw.println(username + "," + password + "," + DEFAULT_STAGE);
                             pw.close();
                         } catch (IOException e){
                             text("Error occured while processing", screenWidth/2, screenHeight/2);
@@ -120,5 +124,16 @@ public class Game extends PApplet{
                 break;
         }
     }
+    public static void updateObject(SketchObject object, boolean controllable){
+        if (object instanceof Kingdom){
+            Kingdom kingdom = (Kingdom) object;
+            int nextIndex = kingdom.getCurrentStatusIndex();
+            kingdom.updateStatus(Status.values()[nextIndex]);
+        } else{
+            object.updateControllable(controllable);
+        }
+        object.draw();
+    }
+    
     
 }

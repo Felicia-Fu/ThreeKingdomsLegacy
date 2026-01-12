@@ -13,6 +13,7 @@ public class Kingdom extends SketchObject{
     private PImage[] imagesBeforeTrigger, imagesAfterTrigger;
     private Event[] keyPoints;
     private static Status status;
+    private static boolean chosen = false;
     public Kingdom(PApplet app, PImage map, PImage[] imagesBeforeTrigger, PImage[] imagesAfterTrigger, Event[] keyPoints){
         super(app, app.width/2, app.height/2, map);
         this.imagesBeforeTrigger = imagesBeforeTrigger; 
@@ -20,15 +21,21 @@ public class Kingdom extends SketchObject{
         this.keyPoints = keyPoints;
         status = Status.BIRTH;
     }
-    public void draw(boolean start){
+    public void draw(){
         boolean triggered;
         PImage displayedImage;
         int stage = status.ordinal();
         triggered = keyPoints[stage].getTrigger().getTriggered();
-        displayedImage = start ? triggered ? imagesAfterTrigger[stage] : imagesBeforeTrigger[stage] : image;
+        displayedImage = chosen ? triggered ? imagesAfterTrigger[stage] : imagesBeforeTrigger[stage] : image;
         app.image(displayedImage, x, y);
     }
     public void updateStatus(Status status){
         this.status = status;
+    }
+    public int getCurrentStatusIndex(){
+        return status.ordinal();
+    }
+    public void getChosen(){
+        chosen = true;
     }
 }
