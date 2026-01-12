@@ -5,6 +5,7 @@
 package threekingdomslegacy;
 import processing.core.*;
 import java.io.*;
+import java.util.*;
 /**
  *
  * @author FFC03
@@ -22,6 +23,7 @@ public class Game extends PApplet{
     public String chosenKingdom = "";
     public Kingdom[] kingdoms = new Kingdom[3];
     public final int DEFAULT_STAGE = 1;
+    public static LinkedHashMap<String, String[]> userInfo = new LinkedHashMap();
     
     public void settings(){
         size(screenWidth, screenHeight);
@@ -31,6 +33,8 @@ public class Game extends PApplet{
         titleFont = createFont("fonts/rogenz.otf", 120);
         subtitleFont = createFont("fonts/rogenz.otf", 50);
         contentFont = createFont("fonts/rogenz.otf", 25);
+        userInfo = loadContents(new File("users.csv"));
+        stage = -1;
         
     }
     public void draw(){
@@ -50,9 +54,9 @@ public class Game extends PApplet{
                 text("Start", screenWidth/2, screenHeight/2 + 93); 
                 break;
             case 0:
-                background(255);
                 textFont(contentFont);
                 textAlign(LEFT);
+                fill(0);
                 text("Enter username: ", 150, 100);
                 text(username, 400, 100);
                 text("Enter password: ", 150, 150);
@@ -65,13 +69,37 @@ public class Game extends PApplet{
                 String texts = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
                 text(texts, screenWidth/2, screenHeight/2);
                 break;
+            case 2:
+                background(255);
+                fill(0);
+                text(chosenKingdom, screenWidth/2, screenHeight/2);
         }
+        fill(23, 100, 100);
+        rect(screenWidth - 225, screenHeight - 80, 200, 74);
+        fill(0);
+        textAlign(CENTER);
+        textFont(subtitleFont);
+        text("Exit", screenWidth - 125, screenHeight - 28); 
         
     }
     public void mousePressed(){
         if (stage == -1 && mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight/2 + 74 * 3 / 2 && mouseY > screenHeight/2 + 74/2){
+            background(255);
             stage = 0;
+        }  
+        if (stage == 1){
+            background(255);
+            stage = 2;
+            System.out.println("Kingdom chosen");
+            chosenKingdom = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
         }
+        if (mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
+            background(255);
+            stage = -2;
+            userInfo.put(username, new String[]{password, Integer.toString(stage)});
+            exitGame();
+            exit();
+        }  
     }
     public void keyPressed(){
         switch(stage){
@@ -79,10 +107,10 @@ public class Game extends PApplet{
                 if (keyCode != ENTER){
                     if (keyCode != CODED){
                         if (count == 0){
-                            username += key;
+                            username += (Character.isLetter(key) || Character.isDigit(key)) ? key : "";
                         } else{
-                            password += key;
-                            placeholder += "0";
+                            password += (Character.isLetter(key) || Character.isDigit(key)) ? key : "";
+                            placeholder += (Character.isLetter(key) || Character.isDigit(key)) ? 0 : "";
                         }
                     }
                     if (keyCode == BACKSPACE){
@@ -99,14 +127,30 @@ public class Game extends PApplet{
                     }
                     if (count == 2){
                         count = 0;
-                        stage = 1;
-                        try{
+                        if (userInfo.containsKey(username)){
+                            if (password.equals(userInfo.get(username)[0])){
+                                stage = Integer.parseInt(userInfo.get(username)[1]);
+                                background(255);
+                            } else{
+                                background(255);
+                                textAlign(CENTER);
+                                fill(255, 0, 0);
+                                text("Wrong password entered", screenWidth/2, screenHeight/2);
+                                password = "";
+                                placeholder = "";
+                                count = 1;
+                            }
+                        } else{
+                            try{
                             FileWriter fw = new FileWriter("users.csv", true);
                             PrintWriter pw = new PrintWriter(fw);
                             pw.println(username + "," + password + "," + DEFAULT_STAGE);
                             pw.close();
-                        } catch (IOException e){
-                            text("Error occured while processing", screenWidth/2, screenHeight/2);
+                            } catch (IOException e){
+                                text("Error occured while processing", screenWidth/2, screenHeight/2);
+                            }
+                            stage = 1;
+                            background(255);
                         }
                     }
                 }
@@ -133,6 +177,32 @@ public class Game extends PApplet{
             object.updateControllable(controllable);
         }
         object.draw();
+    }
+    public static LinkedHashMap<String, String[]> loadContents(File file){
+        LinkedHashMap<String, String[]> userInfo = new LinkedHashMap<String, String[]>();
+        try{
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()){
+                String[] content = scan.nextLine().split(",");
+                userInfo.put(content[0], new String[]{content[1], content[2]});
+            }
+        } catch(FileNotFoundException e){
+            System.out.println("File Not Found!!!");
+        }
+        return userInfo;
+    }
+    public static void exitGame(){
+        try{
+            FileWriter fw = new FileWriter("users.csv", false);
+            PrintWriter pw = new PrintWriter(fw);
+            userInfo.forEach((key, value) -> {
+                pw.println(key + "," + value[0] + "," + value[1]);
+            });
+            pw.close();
+        } catch (IOException e){
+            System.out.println("Error occured");
+        }
+       
     }
     
     
