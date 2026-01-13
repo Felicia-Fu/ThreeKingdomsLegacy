@@ -37,6 +37,7 @@ public class Game extends PApplet{
         contentFont = createFont("fonts/rogenz.otf", 25);
         userInfo = loadContents(new File("users.csv"));
         stage = -1;
+        this.setupKingdom(new File("Shu.tsv"));
         
     }
     public void draw(){
@@ -82,8 +83,7 @@ public class Game extends PApplet{
                 break;
             case 2:
                 background(255);
-                fill(0);
-                text(chosenKingdom, screenWidth/2, screenHeight/2);
+                kingdoms.get(0).draw();
         }
         if (stage > 0){
             fill(23, 100, 100);
@@ -234,7 +234,7 @@ public class Game extends PApplet{
             while (scan.hasNextLine()){
                 String line = scan.nextLine();
                 String[] contents = line.split("\t");
-                Action action = Action.valueOf(contents[0]);
+                Action action = Action.valueOf(contents[0].toUpperCase());
                 if (!contents[1].isEmpty()){
                     imagesBefore.add(loadImage(contents[1]));
                 } else{
@@ -245,6 +245,7 @@ public class Game extends PApplet{
                 } else{
                     imagesAfter.add(null);
                 }
+                int numControllable = 0;
                 if (action == Action.DRAG || action == Action.MOVE){
                     int arraySize = Integer.parseInt(contents[3]);
                     int[] centerPositions;
@@ -255,9 +256,10 @@ public class Game extends PApplet{
                         int y = Integer.parseInt(contents[3 + 5 * i + 3]);
                         int sizeFactor = Integer.parseInt(contents[3 + 5 * i + 4]);
                         boolean controllable = Boolean.parseBoolean(contents[3 + 5 * i + 5]);
+                        numControllable = controllable ? numControllable + 1 : numControllable;
                         objects[i] = new SketchObject(this, x, y, loadImage(imagePathway), controllable, sizeFactor);
                     }
-                    centerPositions = new int[objects.length * 2];
+                    centerPositions = new int[numControllable * 2];
                     int startingIndex = 4 + 5 * arraySize;
                     for (int i = 0; i < centerPositions.length; i++){
                         centerPositions[i] = Integer.parseInt(contents[startingIndex + i]);
@@ -266,7 +268,7 @@ public class Game extends PApplet{
                     int verticalOffset = (4 + 5 * arraySize + centerPositions.length) < contents.length - 2 ? 
                             Integer.parseInt(contents[5 + 5 * arraySize + centerPositions.length]) : horizontalOffset;
                     String description = contents[contents.length - 1];
-                    events.add(new Event(new Trigger(objects, action, centerPositions, horizontalOffset, verticalOffset), description));
+                    events.add(new Event(new DynamicTrigger(objects, action, horizontalOffset, verticalOffset, centerPositions), description));
                 } else{
                     int counter = Integer.parseInt(contents[3]);
                     int mouseCenterX = Integer.parseInt(contents[4]);
@@ -274,12 +276,15 @@ public class Game extends PApplet{
                     int horizontalOffset = Integer.parseInt(contents[6]);
                     int verticalOffset = 7 < contents.length - 1 ? Integer.parseInt(contents[7]) : horizontalOffset;
                     String description = contents[contents.length - 1];
-                    events.add(new Event(new Trigger(action, mouseCenterX, mouseCenterY, horizontalOffset, verticalOffset, counter), description));
+                    events.add(new Event(new StationaryTrigger(action, horizontalOffset, verticalOffset, mouseCenterX, mouseCenterY, counter), description));
                 } 
             }
         } catch (FileNotFoundException e){
             System.out.println("File Not Found");
         }
+        String fileName = file.getName();
+        String mapName = "images/" + fileName.substring(0, fileName.length() - 3).toLowerCase() + "png";
+        kingdoms.add(new Kingdom(this, loadImage(mapName), imagesBefore, imagesAfter, events));
     }
     
     

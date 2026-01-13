@@ -10,47 +10,23 @@ package threekingdomslegacy;
  */
 public class Trigger {
     private Action action;
-    private int counter;
-    private SketchObject[] objects;
-    private boolean triggered;
-    private int[] centerPositions;
+    public SketchObject[] objects;
+    public boolean triggered;
     private int horizontalOffset, verticalOffset;
-    private int mouseCenterX, mouseCenterY;
-    public Trigger(SketchObject[] objects, Action action, int[] centerPositions, int horizontalOffset, int verticalOffset){
+    
+    public Trigger(SketchObject[] objects, Action action, int horizontalOffset, int verticalOffset){
         this.objects = objects;
-        triggered = false;
         this.action = action;
-        this.centerPositions = centerPositions;
+        triggered = false;
         this.horizontalOffset = horizontalOffset;
         this.verticalOffset = verticalOffset;
     }
-    public Trigger(Action action, int mouseCenterX, int mouseCenterY, int horizontalOffset, int verticalOffset, int counter){
-        triggered = false;
+    public Trigger(Action action, int horizontalOffset, int verticalOffset){
+        this.objects = null;
         this.action = action;
-        this.counter = counter;
+        triggered = false;
         this.horizontalOffset = horizontalOffset;
         this.verticalOffset = verticalOffset;
-    }
-    public void trigger(){
-        if (centerPositions.length / 2 == objects.length){
-            for (int i = 0; i < objects.length; i ++){
-                int centerPositionX = centerPositions[2 * i];
-                int centerPositionY = centerPositions[2 * i + 1];
-                boolean yWithinRange = (objects[i].y > centerPositionY - verticalOffset) && (objects[i].y < centerPositionY + verticalOffset);
-                boolean xWithinRange = (objects[i].x > centerPositionX - horizontalOffset) && (objects[i].x < centerPositionX + horizontalOffset);
-                if (!yWithinRange || !xWithinRange){
-                    triggered = false;
-                    return;
-                }
-            }
-            triggered = true;
-        } else{
-            triggered = false;
-            return;
-        }
-    }
-    public void trigger(int currentCount){
-        triggered = currentCount == counter;
     }
     public Action getAction(){
         return action;

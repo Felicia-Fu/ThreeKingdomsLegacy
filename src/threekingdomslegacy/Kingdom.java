@@ -41,4 +41,7 @@ public class Kingdom extends SketchObject{
     public void getChosen(){
         chosen = true;
     }
+    public void setInvisible(){
+        visible = false;
+    }
 }
