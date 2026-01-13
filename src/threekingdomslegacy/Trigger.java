@@ -34,4 +34,7 @@ public class Trigger {
     public boolean getTriggered(){
         return triggered;
     }
+    public SketchObject[] getObjects(){
+        return objects;
+    }
 }

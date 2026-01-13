@@ -37,7 +37,10 @@ public class SketchObject {
         this.sizeFactor = sizeFactor;
     }
     public void draw(){
-        app.image(image, x, y);
+        app.imageMode(PApplet.CENTER);
+        if (image != null){
+            app.image(image, x, y, image.pixelWidth * sizeFactor / 100, image.pixelHeight * sizeFactor / 100);
+        }
     }
     public void move(){
         if (controllable){

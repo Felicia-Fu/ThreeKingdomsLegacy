@@ -13,9 +13,9 @@ import java.util.*;
 public class Kingdom extends SketchObject{
     private ArrayList<PImage> imagesBeforeTrigger, imagesAfterTrigger;
     private ArrayList<Event> keyPoints;
-    private static Status status;
-    private static boolean chosen = false;
-    private static boolean visible = true;
+    private Status status;
+    private boolean chosen = false;
+    private boolean visible = true;
     public Kingdom(PApplet app, PImage map, ArrayList<PImage> imagesBeforeTrigger, ArrayList<PImage> imagesAfterTrigger, ArrayList<Event> keyPoints){
         super(app, app.width/2, app.height/2, map, false);
         this.imagesBeforeTrigger = imagesBeforeTrigger; 
@@ -24,12 +24,19 @@ public class Kingdom extends SketchObject{
         status = Status.BIRTH;
     }
     public void draw(){
-        boolean triggered;
         PImage displayedImage;
         int stage = status.ordinal();
-        triggered = keyPoints.get(stage).getTrigger().getTriggered();
+        Trigger trigger = keyPoints.get(stage).getTrigger();
+        boolean triggered = trigger.getTriggered();
         displayedImage = visible ? chosen ? triggered ? imagesAfterTrigger.get(stage) : imagesBeforeTrigger.get(stage) : image : null;
-        if (displayedImage != null) app.image(displayedImage, x, y);
+        if (displayedImage != null){
+            app.image(displayedImage, x, y, displayedImage.pixelWidth * app.height / displayedImage.pixelHeight, app.height);
+            if (trigger.getAction() == Action.DRAG || trigger.getAction() == Action.MOVE){
+                for (SketchObject object: trigger.getObjects()){
+                    object.draw();
+                }
+            }
+        }
         if (triggered) app.text(keyPoints.get(stage).getDescription(), app.width/2, app.height/2);
     }
     public void updateStatus(Status status){
@@ -38,15 +45,10 @@ public class Kingdom extends SketchObject{
     public int getCurrentStatusIndex(){
         return status.ordinal();
     }
-    public void getChosen(){
-        chosen = true;
-    }
     public void setChosen(){
-        chosen = true;
-        System.out.println("Program runs till here! Kingdom chosen");
+        this.chosen = true;
     }
     public void setInvisible(){
-        visible = false;
-        System.out.println("Program runs till here! Kingdom invisible");
+        this.visible = false;
     }
 }

@@ -26,6 +26,7 @@ public class Game extends PApplet{
     public static LinkedHashMap<String, String[]> userInfo = new LinkedHashMap();
     public Boolean correctPassword = null;
     private int mapSizeMultiplier = 80;
+    private static String[] kingdomName = new String[] {"Shu", "Wei", "Eastern Wu"};
             
     public void settings(){
         size(screenWidth, screenHeight);
@@ -35,11 +36,11 @@ public class Game extends PApplet{
         titleFont = createFont("fonts/rogenz.otf", 120);
         subtitleFont = createFont("fonts/rogenz.otf", 50);
         contentFont = createFont("fonts/rogenz.otf", 25);
-        userInfo = loadContents(new File("users.csv"));
         stage = -1;
         this.setupKingdom(new File("Shu.tsv"));
         this.setupKingdom(new File("Wei.tsv"));
         this.setupKingdom(new File("Eastern Wu.tsv"));
+        userInfo = loadContents(new File("users.csv"));
         
     }
     public void draw(){
@@ -81,18 +82,19 @@ public class Game extends PApplet{
                 break;
             case 1:
                 background(255);
-                String texts = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
+                String texts = kingdomName[index - 1];
                 String imagePathway = "images/" + texts.toLowerCase() + ".png";
                 PImage map = loadImage(imagePathway);
                 imageMode(CENTER);
-                map.resize(map.pixelWidth * mapSizeMultiplier / 100, map.pixelHeight * mapSizeMultiplier / 100);
-                image(map, screenWidth/2, screenHeight/2);
+                image(map, screenWidth/2, screenHeight/2, map.pixelWidth * mapSizeMultiplier / 100, map.pixelHeight * mapSizeMultiplier / 100);
                 break;
             case 2:
                 background(255);
                 kingdoms.get(index - 1).updateStatus(Status.values()[Integer.parseInt(userInfo.get(username)[3])]);
                 imageMode(CENTER);
+                size(screenWidth, screenHeight);
                 kingdoms.get(index - 1).draw();
+                
         }
         if (stage > 0){
             fill(23, 100, 100);
@@ -110,7 +112,6 @@ public class Game extends PApplet{
         }  
         if (stage == 1){
             background(255);
-            stage = 2;
             chosenKingdom = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
             userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE), chosenKingdom, "0"});
             for (int i = 0; i < 3; i ++){
@@ -120,6 +121,7 @@ public class Game extends PApplet{
                     kingdoms.get(i).setInvisible();
                 }
             }
+            stage = 2;
         }
         if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
             background(255);
@@ -217,6 +219,13 @@ public class Game extends PApplet{
                 String[] content = scan.nextLine().split(",");
                 if (Integer.parseInt(content[2]) > 1){
                     userInfo.put(content[0], new String[]{content[1], content[2], content[3], content[4]});
+                    for (int i = 0; i < 3; i ++){
+                        if (kingdomName[i].equals(content[3])){
+                            kingdoms.get(i).setChosen();
+                        } else{
+                            kingdoms.get(i).setInvisible();
+                        }
+                    }
                 } else{
                     userInfo.put(content[0], new String[]{content[1], content[2]});
                 }
@@ -232,7 +241,7 @@ public class Game extends PApplet{
             PrintWriter pw = new PrintWriter(fw);
             userInfo.forEach((key, value) -> {
                 if (!key.equals(username)){
-                    pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) > 1 ? ("," + value[2] + value[3]) : ""));
+                    pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) > 1 ? ("," + value[2] + "," + value[3]) : ""));
                 } else{
                     pw.println(username + "," + password + "," + stage + (stage > 1 ? ("," + chosenKingdom) + "," + kingdoms.get(index).getCurrentStatusIndex() : ""));
                 }
