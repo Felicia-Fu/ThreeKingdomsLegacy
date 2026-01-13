@@ -49,5 +49,8 @@ public class SketchObject {
         this.controllable = controllable;
         this.speed = controllable ? speed : 0;
     }
+    public boolean getControllable(){
+        return controllable;
+    }
     
 }

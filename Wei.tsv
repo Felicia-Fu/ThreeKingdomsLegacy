@@ -1,0 +1,5 @@
+Move	images/wei/birth_before.png	images/wei/birth_after.png	1	images/wei/birth_trigger.png	350	450	75	TRUE	250	350	10	Cao Cao rises amid chaos, unifying northern China through military strength and administrative reform, laying the foundation for Wei.
+Click	images/wei/rising.png	images/wei/rising.png	1	250	350	250	350	With vast territory and resources, Wei becomes the strongest of the three kingdoms, enforcing strict laws and centralized rule.				
+Click	images/wei/climax.png	images/wei/climax.png	1	250	350	250	350	Wei reaches its height in population, economy, and military power, holding decisive advantage over its rivals.				
+Click	images/wei/falling.png	images/wei/falling.png	1	250	350	250	350	Internal struggles and the rise of the Sima family weaken the authority of the Cao rulers.				
+Click	images/wei/death.png	images/wei/death.png	1	250	350	250	350	The Wei emperor is forced to abdicate, and the Sima clan establishes the Jin dynasty, bringing Wei to an end.				

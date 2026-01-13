@@ -41,7 +41,12 @@ public class Kingdom extends SketchObject{
     public void getChosen(){
         chosen = true;
     }
+    public void setChosen(){
+        chosen = true;
+        System.out.println("Program runs till here! Kingdom chosen");
+    }
     public void setInvisible(){
         visible = false;
+        System.out.println("Program runs till here! Kingdom invisible");
     }
 }

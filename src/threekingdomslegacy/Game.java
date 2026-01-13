@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class Game extends PApplet{
     public static int stage = -1;
-    public int index = 1;
+    public static int index = 1;
     public final int screenWidth = 700, screenHeight = 500;
     public PFont titleFont, subtitleFont, contentFont;
     public static String username = "";
@@ -38,9 +38,16 @@ public class Game extends PApplet{
         userInfo = loadContents(new File("users.csv"));
         stage = -1;
         this.setupKingdom(new File("Shu.tsv"));
+        this.setupKingdom(new File("Wei.tsv"));
+        this.setupKingdom(new File("Eastern Wu.tsv"));
         
     }
     public void draw(){
+        //Sample image:
+//        imageMode(CENTER);
+//        PImage backgroundImage = loadImage("images/eastern wu/birth.png");
+//        backgroundImage.resize(backgroundImage.pixelWidth * backgroundImage.pixelHeight/screenHeight, screenHeight);
+//        image(backgroundImage, screenWidth/2, screenHeight/2);
         switch (stage){
             case -1:
                 fill(255, 0, 0);
@@ -83,7 +90,9 @@ public class Game extends PApplet{
                 break;
             case 2:
                 background(255);
-                kingdoms.get(0).draw();
+                kingdoms.get(index - 1).updateStatus(Status.values()[Integer.parseInt(userInfo.get(username)[3])]);
+                imageMode(CENTER);
+                kingdoms.get(index - 1).draw();
         }
         if (stage > 0){
             fill(23, 100, 100);
@@ -103,6 +112,14 @@ public class Game extends PApplet{
             background(255);
             stage = 2;
             chosenKingdom = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
+            userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE), chosenKingdom, "0"});
+            for (int i = 0; i < 3; i ++){
+                if (i == index - 1){
+                    kingdoms.get(i).setChosen();
+                } else{
+                    kingdoms.get(i).setInvisible();
+                }
+            }
         }
         if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
             background(255);
@@ -159,6 +176,7 @@ public class Game extends PApplet{
                             PrintWriter pw = new PrintWriter(fw);
                             pw.println(username + "," + password + "," + DEFAULT_STAGE);
                             pw.close();
+                            userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE)});
                             } catch (IOException e){
                                 text("Error occured while processing", screenWidth/2, screenHeight/2);
                             }
@@ -198,7 +216,7 @@ public class Game extends PApplet{
             while (scan.hasNextLine()){
                 String[] content = scan.nextLine().split(",");
                 if (Integer.parseInt(content[2]) > 1){
-                    userInfo.put(content[0], new String[]{content[1], content[2], content[3]});
+                    userInfo.put(content[0], new String[]{content[1], content[2], content[3], content[4]});
                 } else{
                     userInfo.put(content[0], new String[]{content[1], content[2]});
                 }
@@ -214,9 +232,9 @@ public class Game extends PApplet{
             PrintWriter pw = new PrintWriter(fw);
             userInfo.forEach((key, value) -> {
                 if (!key.equals(username)){
-                    pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) > 1 ? ("," + value[2]) : ""));
+                    pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) > 1 ? ("," + value[2] + value[3]) : ""));
                 } else{
-                    pw.println(username + "," + password + "," + stage + (stage > 1 ? ("," + chosenKingdom) : ""));
+                    pw.println(username + "," + password + "," + stage + (stage > 1 ? ("," + chosenKingdom) + "," + kingdoms.get(index).getCurrentStatusIndex() : ""));
                 }
                 
             });
