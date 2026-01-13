@@ -5,17 +5,19 @@
 package threekingdomslegacy;
 import processing.core.PApplet;
 import processing.core.PImage;
+import java.util.*;
 /**
  *
  * @author FFC03
  */
 public class Kingdom extends SketchObject{
-    private PImage[] imagesBeforeTrigger, imagesAfterTrigger;
-    private Event[] keyPoints;
+    private ArrayList<PImage> imagesBeforeTrigger, imagesAfterTrigger;
+    private ArrayList<Event> keyPoints;
     private static Status status;
     private static boolean chosen = false;
-    public Kingdom(PApplet app, PImage map, PImage[] imagesBeforeTrigger, PImage[] imagesAfterTrigger, Event[] keyPoints){
-        super(app, app.width/2, app.height/2, map);
+    private static boolean visible = true;
+    public Kingdom(PApplet app, PImage map, ArrayList<PImage> imagesBeforeTrigger, ArrayList<PImage> imagesAfterTrigger, ArrayList<Event> keyPoints){
+        super(app, app.width/2, app.height/2, map, false);
         this.imagesBeforeTrigger = imagesBeforeTrigger; 
         this.imagesAfterTrigger = imagesAfterTrigger;
         this.keyPoints = keyPoints;
@@ -25,9 +27,10 @@ public class Kingdom extends SketchObject{
         boolean triggered;
         PImage displayedImage;
         int stage = status.ordinal();
-        triggered = keyPoints[stage].getTrigger().getTriggered();
-        displayedImage = chosen ? triggered ? imagesAfterTrigger[stage] : imagesBeforeTrigger[stage] : image;
-        app.image(displayedImage, x, y);
+        triggered = keyPoints.get(stage).getTrigger().getTriggered();
+        displayedImage = visible ? chosen ? triggered ? imagesAfterTrigger.get(stage) : imagesBeforeTrigger.get(stage) : image : null;
+        if (displayedImage != null) app.image(displayedImage, x, y);
+        if (triggered) app.text(keyPoints.get(stage).getDescription(), app.width/2, app.height/2);
     }
     public void updateStatus(Status status){
         this.status = status;

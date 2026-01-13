@@ -8,7 +8,7 @@ package threekingdomslegacy;
  *
  * @author FFC03
  */
-enum Status {
+public enum Status {
     BIRTH,
     RISING,
     CLIMAX,

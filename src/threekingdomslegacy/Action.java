@@ -8,7 +8,8 @@ package threekingdomslegacy;
  *
  * @author FFC03
  */
-enum Action {
+public enum Action {
     DRAG,
-    CLICK
+    CLICK,
+    MOVE
 }

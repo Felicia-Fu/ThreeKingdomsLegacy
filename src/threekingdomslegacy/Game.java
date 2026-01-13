@@ -11,20 +11,22 @@ import java.util.*;
  * @author FFC03
  */
 public class Game extends PApplet{
-    public int stage = -1;
+    public static int stage = -1;
     public int index = 1;
     public final int screenWidth = 700, screenHeight = 500;
     public PFont titleFont, subtitleFont, contentFont;
-    public String username = "";
-    public String password = "";
+    public static String username = "";
+    public static String password = "";
     public String placeholder = "";
     public boolean finishUsername = false;
     public int count = 0;
-    public String chosenKingdom = "";
-    public Kingdom[] kingdoms = new Kingdom[3];
+    public static String chosenKingdom = "";
+    public static ArrayList<Kingdom> kingdoms = new ArrayList<Kingdom>();
     public final int DEFAULT_STAGE = 1;
     public static LinkedHashMap<String, String[]> userInfo = new LinkedHashMap();
-    
+    public Boolean correctPassword = null;
+    private int mapSizeMultiplier = 80;
+            
     public void settings(){
         size(screenWidth, screenHeight);
     }
@@ -54,6 +56,7 @@ public class Game extends PApplet{
                 text("Start", screenWidth/2, screenHeight/2 + 93); 
                 break;
             case 0:
+                background(255);
                 textFont(contentFont);
                 textAlign(LEFT);
                 fill(0);
@@ -61,26 +64,35 @@ public class Game extends PApplet{
                 text(username, 400, 100);
                 text("Enter password: ", 150, 150);
                 text(placeholder, 400, 150);
+                if (correctPassword != null){
+                    if (!correctPassword){
+                        fill(255, 0, 0);
+                        text("Wrong password entered", screenWidth/2, screenHeight/2);
+                    }
+                }
                 break;
             case 1:
                 background(255);
-                fill(0);
-                textAlign(CENTER);
                 String texts = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
-                text(texts, screenWidth/2, screenHeight/2);
+                String imagePathway = "images/" + texts.toLowerCase() + ".png";
+                PImage map = loadImage(imagePathway);
+                imageMode(CENTER);
+                map.resize(map.pixelWidth * mapSizeMultiplier / 100, map.pixelHeight * mapSizeMultiplier / 100);
+                image(map, screenWidth/2, screenHeight/2);
                 break;
             case 2:
                 background(255);
                 fill(0);
                 text(chosenKingdom, screenWidth/2, screenHeight/2);
         }
-        fill(23, 100, 100);
-        rect(screenWidth - 225, screenHeight - 80, 200, 74);
-        fill(0);
-        textAlign(CENTER);
-        textFont(subtitleFont);
-        text("Exit", screenWidth - 125, screenHeight - 28); 
-        
+        if (stage > 0){
+            fill(23, 100, 100);
+            rect(screenWidth - 225, screenHeight - 80, 200, 74);
+            fill(0);
+            textAlign(CENTER);
+            textFont(subtitleFont);
+            text("Exit", screenWidth - 125, screenHeight - 28); 
+        }
     }
     public void mousePressed(){
         if (stage == -1 && mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight/2 + 74 * 3 / 2 && mouseY > screenHeight/2 + 74/2){
@@ -90,12 +102,10 @@ public class Game extends PApplet{
         if (stage == 1){
             background(255);
             stage = 2;
-            System.out.println("Kingdom chosen");
             chosenKingdom = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
         }
-        if (mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
+        if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
             background(255);
-            stage = -2;
             userInfo.put(username, new String[]{password, Integer.toString(stage)});
             exitGame();
             exit();
@@ -115,10 +125,10 @@ public class Game extends PApplet{
                     }
                     if (keyCode == BACKSPACE){
                         if (count == 0){
-                            username = username.length() <= 1 ? "" : username.substring(0, username.length() - 2);
+                            username = username.length() <= 1 ? "" : username.substring(0, username.length() - 1);
                         } else{
-                            password = password.length() <= 1 ? "" : password.substring(0, password.length() - 2);
-                            placeholder = placeholder.length() <= 1 ? "" : placeholder.substring(0, placeholder.length() - 2);
+                            password = password.length() <= 1 ? "" : password.substring(0, password.length() - 1);
+                            placeholder = placeholder.length() <= 1 ? "" : placeholder.substring(0, placeholder.length() - 1);
                         }
                     }
                 } else{
@@ -130,15 +140,18 @@ public class Game extends PApplet{
                         if (userInfo.containsKey(username)){
                             if (password.equals(userInfo.get(username)[0])){
                                 stage = Integer.parseInt(userInfo.get(username)[1]);
+                                if (stage > 1){
+                                    chosenKingdom = userInfo.get(username)[2];
+                                }
                                 background(255);
+                                correctPassword = true;
                             } else{
                                 background(255);
                                 textAlign(CENTER);
-                                fill(255, 0, 0);
-                                text("Wrong password entered", screenWidth/2, screenHeight/2);
                                 password = "";
                                 placeholder = "";
                                 count = 1;
+                                correctPassword = false;
                             }
                         } else{
                             try{
@@ -149,7 +162,7 @@ public class Game extends PApplet{
                             } catch (IOException e){
                                 text("Error occured while processing", screenWidth/2, screenHeight/2);
                             }
-                            stage = 1;
+                            stage = DEFAULT_STAGE;
                             background(255);
                         }
                     }
@@ -184,7 +197,11 @@ public class Game extends PApplet{
             Scanner scan = new Scanner(file);
             while (scan.hasNextLine()){
                 String[] content = scan.nextLine().split(",");
-                userInfo.put(content[0], new String[]{content[1], content[2]});
+                if (Integer.parseInt(content[2]) > 1){
+                    userInfo.put(content[0], new String[]{content[1], content[2], content[3]});
+                } else{
+                    userInfo.put(content[0], new String[]{content[1], content[2]});
+                }
             }
         } catch(FileNotFoundException e){
             System.out.println("File Not Found!!!");
@@ -196,13 +213,73 @@ public class Game extends PApplet{
             FileWriter fw = new FileWriter("users.csv", false);
             PrintWriter pw = new PrintWriter(fw);
             userInfo.forEach((key, value) -> {
-                pw.println(key + "," + value[0] + "," + value[1]);
+                if (!key.equals(username)){
+                    pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) > 1 ? ("," + value[2]) : ""));
+                } else{
+                    pw.println(username + "," + password + "," + stage + (stage > 1 ? ("," + chosenKingdom) : ""));
+                }
+                
             });
             pw.close();
         } catch (IOException e){
             System.out.println("Error occured");
         }
        
+    }
+    public void setupKingdom(File file){
+        ArrayList<Event> events = new ArrayList<Event>();
+        ArrayList<PImage> imagesBefore = new ArrayList<PImage>(), imagesAfter = new ArrayList<PImage>();
+        try{
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()){
+                String line = scan.nextLine();
+                String[] contents = line.split("\t");
+                Action action = Action.valueOf(contents[0]);
+                if (!contents[1].isEmpty()){
+                    imagesBefore.add(loadImage(contents[1]));
+                } else{
+                    imagesBefore.add(null);
+                }
+                if (!contents[2].isEmpty()){
+                    imagesAfter.add(loadImage(contents[2]));
+                } else{
+                    imagesAfter.add(null);
+                }
+                if (action == Action.DRAG || action == Action.MOVE){
+                    int arraySize = Integer.parseInt(contents[3]);
+                    int[] centerPositions;
+                    SketchObject[] objects = new SketchObject[arraySize];
+                    for (int i = 0; i < arraySize; i ++){
+                        String imagePathway = contents[3 + 5 * i + 1];
+                        int x = Integer.parseInt(contents[3 + 5 * i + 2]);
+                        int y = Integer.parseInt(contents[3 + 5 * i + 3]);
+                        int sizeFactor = Integer.parseInt(contents[3 + 5 * i + 4]);
+                        boolean controllable = Boolean.parseBoolean(contents[3 + 5 * i + 5]);
+                        objects[i] = new SketchObject(this, x, y, loadImage(imagePathway), controllable, sizeFactor);
+                    }
+                    centerPositions = new int[objects.length * 2];
+                    int startingIndex = 4 + 5 * arraySize;
+                    for (int i = 0; i < centerPositions.length; i++){
+                        centerPositions[i] = Integer.parseInt(contents[startingIndex + i]);
+                    }
+                    int horizontalOffset = Integer.parseInt(contents[4 + 5 * arraySize + centerPositions.length]);
+                    int verticalOffset = (4 + 5 * arraySize + centerPositions.length) < contents.length - 2 ? 
+                            Integer.parseInt(contents[5 + 5 * arraySize + centerPositions.length]) : horizontalOffset;
+                    String description = contents[contents.length - 1];
+                    events.add(new Event(new Trigger(objects, action, centerPositions, horizontalOffset, verticalOffset), description));
+                } else{
+                    int counter = Integer.parseInt(contents[3]);
+                    int mouseCenterX = Integer.parseInt(contents[4]);
+                    int mouseCenterY = Integer.parseInt(contents[5]);
+                    int horizontalOffset = Integer.parseInt(contents[6]);
+                    int verticalOffset = 7 < contents.length - 1 ? Integer.parseInt(contents[7]) : horizontalOffset;
+                    String description = contents[contents.length - 1];
+                    events.add(new Event(new Trigger(action, mouseCenterX, mouseCenterY, horizontalOffset, verticalOffset, counter), description));
+                } 
+            }
+        } catch (FileNotFoundException e){
+            System.out.println("File Not Found");
+        }
     }
     
     
