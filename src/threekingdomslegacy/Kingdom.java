@@ -23,6 +23,7 @@ public class Kingdom extends SketchObject{
         this.keyPoints = keyPoints;
         status = Status.BIRTH;
     }
+    @Override
     public void draw(){
         PImage displayedImage;
         int stage = status.ordinal();

@@ -17,7 +17,13 @@ public class DynamicTrigger extends Trigger{
     }
     public void trigger(){
         boolean previousNull = false;
-        if (centerPositions.length / 2 == objects.length){
+        int numValid = 0;
+        for (SketchObject object : objects){
+            if (object.getControllable()){
+                numValid ++;
+            }
+        }
+        if (centerPositions.length / 2 == numValid){
             for (int i = 0; i < objects.length; i ++){
                 if (objects[i].getControllable()){
                     int centerPositionX = centerPositions[!previousNull ? (2 * i) : (2 * (i - 1))];

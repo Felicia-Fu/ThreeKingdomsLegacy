@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class Game extends PApplet{
     public static int stage = -1;
-    public static int index = 1;
+    public static int index = 0;
     public final int screenWidth = 700, screenHeight = 500;
     public PFont titleFont, subtitleFont, contentFont, descriptionFont;
     public static String username = "";
@@ -50,10 +50,9 @@ public class Game extends PApplet{
         
     }
     public void draw(){
-        System.out.println(mouseX + " " + mouseY);
-        //Sample image:
-//        imageMode(CENTER);
-//        PImage backgroundImage = loadImage("images/eastern wu/birth.png");
+        //System.out.println(mouseX + " " + mouseY);
+        //imageMode(CENTER);
+//        PImage backgroundImage = loadImage("images/wei/birth_before.png");
 //        backgroundImage.resize(backgroundImage.pixelWidth * backgroundImage.pixelHeight/screenHeight, screenHeight);
 //        image(backgroundImage, screenWidth/2, screenHeight/2);
         switch (stage){
@@ -89,7 +88,7 @@ public class Game extends PApplet{
                 break;
             case 1:
                 background(255);
-                String texts = kingdomName[index - 1];
+                String texts = kingdomName[index];
                 String imagePathway = "images/" + texts.toLowerCase() + ".png";
                 PImage map = loadImage(imagePathway);
                 imageMode(CENTER);
@@ -106,11 +105,9 @@ public class Game extends PApplet{
                 currentTrigger = currentEvent.getTrigger();
                 if (currentTrigger instanceof DynamicTrigger){
                     ((DynamicTrigger) currentTrigger).trigger();
-                    System.out.println(currentTrigger.getTriggered());
                 } else{
                     ((StationaryTrigger) currentTrigger).trigger(numClicks);
                 }
-                System.out.println(numClicks);
                 break;
             case 3:
                 background(255);
@@ -139,15 +136,14 @@ public class Game extends PApplet{
         }  
         if (stage == 1){
             background(255);
-            chosenKingdom = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
+            chosenKingdom = kingdomName[index];
             userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE), chosenKingdom, "0"});
-            kingdom = kingdoms.get(Arrays.asList(kingdomName).indexOf(chosenKingdom));
+            kingdom = kingdoms.get(index);
+            kingdom.setChosen();
             currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
             currentTrigger = currentEvent.getTrigger();
             for (int i = 0; i < 3; i ++){
-                if (i == index - 1){
-                    kingdoms.get(i).setChosen();
-                } else{
+                if (i != index){
                     kingdoms.get(i).setInvisible();
                 }
             }
@@ -225,9 +221,16 @@ public class Game extends PApplet{
                                 stage = Integer.parseInt(userInfo.get(username)[1]);
                                 if (stage > 1){
                                     chosenKingdom = userInfo.get(username)[2];
-                                    kingdom = kingdoms.get(Arrays.asList(kingdomName).indexOf(chosenKingdom));
+                                    int chosenIndex = Arrays.asList(kingdomName).indexOf(chosenKingdom);
+                                    kingdom = kingdoms.get(chosenIndex);
+                                    kingdom.setChosen();
                                     kingdom.updateStatus(Status.values()[Integer.parseInt(userInfo.get(username)[3])]);
                                     currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
+                                    for (int i = 0; i < kingdoms.size(); i ++){
+                                        if (i != chosenIndex){
+                                            kingdoms.get(i).setInvisible();
+                                        }
+                                    }
                                 }
                                 background(255);
                                 correctPassword = true;
@@ -258,12 +261,12 @@ public class Game extends PApplet{
                 break;
             case 1:
                 if (keyCode == LEFT){
-                    index = (index - 1) % 3;
+                    index --;
                     if (index < 0){
                         index += 3;
                     }
                 } else if (keyCode == RIGHT){
-                    index = index % 3 + 1;
+                    index = (index + 1) % 3;
                 }
                 break;
         }
@@ -302,14 +305,6 @@ public class Game extends PApplet{
                 String[] content = scan.nextLine().split(",");
                 if (Integer.parseInt(content[2]) > 1){
                     userInfo.put(content[0], new String[]{content[1], content[2], content[3], content[4]});
-                    for (int i = 0; i < 3; i ++){
-                        if (kingdomName[i].equals(content[3])){
-                            kingdoms.get(i).setChosen();
-                        } else{
-                            kingdoms.get(i).setInvisible();
-                        }
-                    }
-                    
                 } else{
                     userInfo.put(content[0], new String[]{content[1], content[2]});
                 }
