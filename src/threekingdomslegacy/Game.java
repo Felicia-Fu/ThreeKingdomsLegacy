@@ -14,7 +14,7 @@ public class Game extends PApplet{
     public static int stage = -1;
     public static int index = 1;
     public final int screenWidth = 700, screenHeight = 500;
-    public PFont titleFont, subtitleFont, contentFont;
+    public PFont titleFont, subtitleFont, contentFont, descriptionFont;
     public static String username = "";
     public static String password = "";
     public String placeholder = "";
@@ -41,6 +41,7 @@ public class Game extends PApplet{
         titleFont = createFont("fonts/rogenz.otf", 120);
         subtitleFont = createFont("fonts/rogenz.otf", 50);
         contentFont = createFont("fonts/rogenz.otf", 25);
+        descriptionFont = createFont("fonts/rogenz.otf", 10);
         stage = -1;
         this.setupKingdom(new File("Shu.tsv"));
         this.setupKingdom(new File("Wei.tsv"));
@@ -98,6 +99,8 @@ public class Game extends PApplet{
                 background(255);
                 imageMode(CENTER);
                 size(screenWidth, screenHeight);
+                textFont(descriptionFont);
+                textAlign(CENTER);
                 kingdom.draw();
                 if (chosenObject != null) chosenObject.move();
                 currentTrigger = currentEvent.getTrigger();
