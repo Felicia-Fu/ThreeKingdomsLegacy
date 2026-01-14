@@ -31,12 +31,14 @@ public class Kingdom extends SketchObject{
         displayedImage = visible ? chosen ? triggered ? imagesAfterTrigger.get(stage) : imagesBeforeTrigger.get(stage) : image : null;
         if (displayedImage != null){
             app.image(displayedImage, x, y, displayedImage.pixelWidth * app.height / displayedImage.pixelHeight, app.height);
-            if (trigger.getAction() == Action.MOVE && !triggered){
+        } else{
+            app.background(255);
+        }
+        if (trigger.getAction() == Action.MOVE && !triggered){
                 for (SketchObject object: trigger.getObjects()){
                     object.draw();
                 }
             }
-        }
         if (triggered) app.text(keyPoints.get(stage).getDescription(), app.width/2, app.height/2);
     }
     public void updateStatus(Status status){

@@ -16,15 +16,21 @@ public class DynamicTrigger extends Trigger{
         this.centerPositions = centerPositions;
     }
     public void trigger(){
+        boolean previousNull = false;
         if (centerPositions.length / 2 == objects.length){
             for (int i = 0; i < objects.length; i ++){
-                int centerPositionX = centerPositions[2 * i];
-                int centerPositionY = centerPositions[2 * i + 1];
-                boolean yWithinRange = (objects[i].y > centerPositionY - verticalOffset) && (objects[i].y < centerPositionY + verticalOffset);
-                boolean xWithinRange = (objects[i].x > centerPositionX - horizontalOffset) && (objects[i].x < centerPositionX + horizontalOffset);
-                if (!yWithinRange || !xWithinRange){
-                    triggered = false;
-                    return;
+                if (objects[i].getControllable()){
+                    int centerPositionX = centerPositions[previousNull ? (2 * i) : (2 * (i - 1))];
+                    int centerPositionY = centerPositions[previousNull ? (2 * i + 1) : (2 * (i - 1) + 1)];
+                    previousNull = false;
+                    boolean yWithinRange = (objects[i].y > centerPositionY - verticalOffset) && (objects[i].y < centerPositionY + verticalOffset);
+                    boolean xWithinRange = (objects[i].x > centerPositionX - horizontalOffset) && (objects[i].x < centerPositionX + horizontalOffset);
+                    if (!yWithinRange || !xWithinRange){
+                        triggered = false;
+                        return;
+                    }
+                } else{
+                    previousNull = true;
                 }
             }
             triggered = true;

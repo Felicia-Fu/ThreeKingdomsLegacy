@@ -20,7 +20,4 @@ public class StationaryTrigger extends Trigger{
     public void trigger(int currentCount){
         triggered = currentCount == counter;
     }
-    public void incrementCounter(){
-        counter ++;
-    }
 }

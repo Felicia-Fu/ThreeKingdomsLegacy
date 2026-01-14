@@ -49,7 +49,7 @@ public class Game extends PApplet{
         
     }
     public void draw(){
-        //System.out.println(mouseX + " " + mouseY);
+        System.out.println(mouseX + " " + mouseY);
         //Sample image:
 //        imageMode(CENTER);
 //        PImage backgroundImage = loadImage("images/eastern wu/birth.png");
@@ -95,7 +95,7 @@ public class Game extends PApplet{
                 image(map, screenWidth/2, screenHeight/2, map.pixelWidth * mapSizeMultiplier / 100, map.pixelHeight * mapSizeMultiplier / 100);
                 break;
             case 2:
-                fill(255);
+                background(255);
                 imageMode(CENTER);
                 size(screenWidth, screenHeight);
                 kingdom.draw();
@@ -103,9 +103,14 @@ public class Game extends PApplet{
                 currentTrigger = currentEvent.getTrigger();
                 if (currentTrigger instanceof DynamicTrigger){
                     ((DynamicTrigger) currentTrigger).trigger();
+                    System.out.println(currentTrigger.getTriggered());
                 } else{
                     ((StationaryTrigger) currentTrigger).trigger(numClicks);
                 }
+                System.out.println(numClicks);
+                break;
+            case 3:
+                background(255);
                 
                 
         }
@@ -133,6 +138,9 @@ public class Game extends PApplet{
             background(255);
             chosenKingdom = index == 1 ? "Shu" : index == 2 ? "Wei" : "Eastern Wu";
             userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE), chosenKingdom, "0"});
+            kingdom = kingdoms.get(Arrays.asList(kingdomName).indexOf(chosenKingdom));
+            currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
+            currentTrigger = currentEvent.getTrigger();
             for (int i = 0; i < 3; i ++){
                 if (i == index - 1){
                     kingdoms.get(i).setChosen();
@@ -160,13 +168,14 @@ public class Game extends PApplet{
             } else{
                 StationaryTrigger trigger = (StationaryTrigger) currentTrigger;
                 if (mouseX > trigger.mouseCenterX - trigger.horizontalOffset && mouseX < trigger.mouseCenterX + trigger.horizontalOffset && mouseY > trigger.mouseCenterY - trigger.verticalOffset && mouseY < trigger.mouseCenterY + trigger.verticalOffset){
-                    trigger.incrementCounter();
+                    numClicks ++;
                 }
             }
             if (currentTrigger.getTriggered()){
                     updateObject(kingdom, false);
                     currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
                     currentTrigger = currentEvent.getTrigger();
+                    numClicks = 0;
             }
             
         }
@@ -267,7 +276,10 @@ public class Game extends PApplet{
         if (object instanceof Kingdom){
             Kingdom kingdom = (Kingdom) object;
             int nextIndex = kingdom.getCurrentStatusIndex() + 1;
-            kingdom.updateStatus(Status.values()[nextIndex]);
+            if (nextIndex < kingdom.getEvents().size()) 
+                kingdom.updateStatus(Status.values()[nextIndex]);
+            else
+                stage = 3;
         } else{
             object.updateControllable(controllable);
         }
@@ -320,7 +332,7 @@ public class Game extends PApplet{
                 if (!key.equals(username)){
                     pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) > 1 ? ("," + value[2] + "," + value[3]) : ""));
                 } else{
-                    pw.println(username + "," + password + "," + stage + (stage > 1 ? ("," + chosenKingdom) + "," + kingdoms.get(index).getCurrentStatusIndex() : ""));
+                    pw.println(username + "," + password + "," + stage + (stage > 1 ? ("," + chosenKingdom + "," + kingdom.getCurrentStatusIndex()) : ""));
                 }
                 
             });
