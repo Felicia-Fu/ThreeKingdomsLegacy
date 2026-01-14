@@ -31,7 +31,7 @@ public class Kingdom extends SketchObject{
         displayedImage = visible ? chosen ? triggered ? imagesAfterTrigger.get(stage) : imagesBeforeTrigger.get(stage) : image : null;
         if (displayedImage != null){
             app.image(displayedImage, x, y, displayedImage.pixelWidth * app.height / displayedImage.pixelHeight, app.height);
-            if (trigger.getAction() == Action.DRAG || trigger.getAction() == Action.MOVE){
+            if (trigger.getAction() == Action.MOVE && !triggered){
                 for (SketchObject object: trigger.getObjects()){
                     object.draw();
                 }
@@ -50,5 +50,8 @@ public class Kingdom extends SketchObject{
     }
     public void setInvisible(){
         this.visible = false;
+    }
+    public ArrayList<Event> getEvents(){
+        return keyPoints;
     }
 }

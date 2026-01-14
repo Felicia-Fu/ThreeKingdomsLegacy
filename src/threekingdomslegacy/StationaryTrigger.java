@@ -9,7 +9,8 @@ package threekingdomslegacy;
  * @author FFC03
  */
 public class StationaryTrigger extends Trigger{
-    private int mouseCenterX, mouseCenterY, counter;
+    public int mouseCenterX, mouseCenterY;
+    private int counter;
     public StationaryTrigger(Action action, int horizontalOffset, int verticalOffset, int mouseCenterX, int mouseCenterY, int counter){
         super(action, horizontalOffset, verticalOffset);
         this.mouseCenterX = mouseCenterX;
@@ -18,5 +19,8 @@ public class StationaryTrigger extends Trigger{
     }
     public void trigger(int currentCount){
         triggered = currentCount == counter;
+    }
+    public void incrementCounter(){
+        counter ++;
     }
 }

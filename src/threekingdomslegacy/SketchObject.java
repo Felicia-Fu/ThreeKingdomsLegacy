@@ -18,6 +18,7 @@ public class SketchObject {
     private static final int DEFAULT_SPEED = 5;
     private int sizeFactor;
     private static final int DEFAULT_SIZE_FACTOR = 80;
+    private boolean clicked;
     public SketchObject(PApplet app, int x, int y, PImage image, boolean controllable){
         this.app = app;
         this.x = x;
@@ -26,6 +27,7 @@ public class SketchObject {
         this.controllable = controllable;
         this.speed = controllable ? DEFAULT_SPEED : 0;
         sizeFactor = DEFAULT_SIZE_FACTOR;
+        clicked = false;
     }
     public SketchObject(PApplet app, int x, int y, PImage image, boolean controllable, int sizeFactor){
         this.app = app;
@@ -43,9 +45,19 @@ public class SketchObject {
         }
     }
     public void move(){
-        if (controllable){
-            x += speed;
-            y += speed;
+        if (controllable && clicked && app.keyPressed){
+            if (app.keyCode == PApplet.LEFT){
+                x -= speed;
+            }
+            if (app.keyCode == PApplet.RIGHT){
+                x += speed;
+            }
+            if (app.keyCode == PApplet.UP){
+                y -= speed;
+            }
+            if (app.keyCode == PApplet.DOWN){
+                y += speed;
+            }
         }
     }
     public void updateControllable(boolean controllable){
@@ -54,6 +66,12 @@ public class SketchObject {
     }
     public boolean getControllable(){
         return controllable;
+    }
+    public void updateClicked(){
+        clicked = !clicked;
+    }
+    public void resetClicked(){
+        clicked = false;
     }
     
 }

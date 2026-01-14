@@ -11,7 +11,6 @@ package threekingdomslegacy;
  */
 public class DynamicTrigger extends Trigger{
     private int[] centerPositions;
-    private int horizontalOffset, verticalOffset;
     public DynamicTrigger(SketchObject[] objects, Action action, int horizontalOffset, int verticalOffset, int[] centerPositions){
         super(objects, action, horizontalOffset, verticalOffset);
         this.centerPositions = centerPositions;

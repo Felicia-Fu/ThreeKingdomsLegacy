@@ -12,7 +12,7 @@ public class Trigger {
     private Action action;
     public SketchObject[] objects;
     public boolean triggered;
-    private int horizontalOffset, verticalOffset;
+    public int horizontalOffset, verticalOffset;
     
     public Trigger(SketchObject[] objects, Action action, int horizontalOffset, int verticalOffset){
         this.objects = objects;

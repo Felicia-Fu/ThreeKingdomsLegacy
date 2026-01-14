@@ -27,6 +27,11 @@ public class Game extends PApplet{
     public Boolean correctPassword = null;
     private int mapSizeMultiplier = 80;
     private static String[] kingdomName = new String[] {"Shu", "Wei", "Eastern Wu"};
+    private SketchObject chosenObject = null;
+    private static Event currentEvent;
+    private Trigger currentTrigger;
+    private int numClicks = 0;
+    private static Kingdom kingdom;
             
     public void settings(){
         size(screenWidth, screenHeight);
@@ -44,6 +49,7 @@ public class Game extends PApplet{
         
     }
     public void draw(){
+        //System.out.println(mouseX + " " + mouseY);
         //Sample image:
 //        imageMode(CENTER);
 //        PImage backgroundImage = loadImage("images/eastern wu/birth.png");
@@ -89,11 +95,18 @@ public class Game extends PApplet{
                 image(map, screenWidth/2, screenHeight/2, map.pixelWidth * mapSizeMultiplier / 100, map.pixelHeight * mapSizeMultiplier / 100);
                 break;
             case 2:
-                background(255);
-                kingdoms.get(index - 1).updateStatus(Status.values()[Integer.parseInt(userInfo.get(username)[3])]);
+                fill(255);
                 imageMode(CENTER);
                 size(screenWidth, screenHeight);
-                kingdoms.get(index - 1).draw();
+                kingdom.draw();
+                if (chosenObject != null) chosenObject.move();
+                currentTrigger = currentEvent.getTrigger();
+                if (currentTrigger instanceof DynamicTrigger){
+                    ((DynamicTrigger) currentTrigger).trigger();
+                } else{
+                    ((StationaryTrigger) currentTrigger).trigger(numClicks);
+                }
+                
                 
         }
         if (stage > 0){
@@ -105,6 +118,12 @@ public class Game extends PApplet{
             text("Exit", screenWidth - 125, screenHeight - 28); 
         }
     }
+    
+    
+    
+    
+    
+    
     public void mousePressed(){
         if (stage == -1 && mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight/2 + 74 * 3 / 2 && mouseY > screenHeight/2 + 74/2){
             background(255);
@@ -123,6 +142,34 @@ public class Game extends PApplet{
             }
             stage = 2;
         }
+        if (stage == 2){
+            if (currentTrigger.getAction() == Action.MOVE){
+                SketchObject[] objects = currentTrigger.getObjects();
+                for (SketchObject object: objects){
+                    if (mouseX > object.x - object.image.width / 2 && mouseX < object.x + object.image.width / 2 && mouseY > object.y - object.image.height / 2 && mouseY < object.y + object.image.height/2){
+                        object.updateClicked();
+                        chosenObject = object; 
+                        break;
+                    }
+                }
+                for (SketchObject object: objects){
+                    if (object != chosenObject){
+                        object.resetClicked();
+                    }
+                }
+            } else{
+                StationaryTrigger trigger = (StationaryTrigger) currentTrigger;
+                if (mouseX > trigger.mouseCenterX - trigger.horizontalOffset && mouseX < trigger.mouseCenterX + trigger.horizontalOffset && mouseY > trigger.mouseCenterY - trigger.verticalOffset && mouseY < trigger.mouseCenterY + trigger.verticalOffset){
+                    trigger.incrementCounter();
+                }
+            }
+            if (currentTrigger.getTriggered()){
+                    updateObject(kingdom, false);
+                    currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
+                    currentTrigger = currentEvent.getTrigger();
+            }
+            
+        }
         if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
             background(255);
             userInfo.put(username, new String[]{password, Integer.toString(stage)});
@@ -130,6 +177,11 @@ public class Game extends PApplet{
             exit();
         }  
     }
+    
+    
+    
+    
+    
     public void keyPressed(){
         switch(stage){
             case 0:
@@ -161,6 +213,9 @@ public class Game extends PApplet{
                                 stage = Integer.parseInt(userInfo.get(username)[1]);
                                 if (stage > 1){
                                     chosenKingdom = userInfo.get(username)[2];
+                                    kingdom = kingdoms.get(Arrays.asList(kingdomName).indexOf(chosenKingdom));
+                                    kingdom.updateStatus(Status.values()[Integer.parseInt(userInfo.get(username)[3])]);
+                                    currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
                                 }
                                 background(255);
                                 correctPassword = true;
@@ -201,16 +256,29 @@ public class Game extends PApplet{
                 break;
         }
     }
+    
+    
+    
+    
+    
+    
+    
     public static void updateObject(SketchObject object, boolean controllable){
         if (object instanceof Kingdom){
             Kingdom kingdom = (Kingdom) object;
-            int nextIndex = kingdom.getCurrentStatusIndex();
+            int nextIndex = kingdom.getCurrentStatusIndex() + 1;
             kingdom.updateStatus(Status.values()[nextIndex]);
         } else{
             object.updateControllable(controllable);
         }
         object.draw();
     }
+    
+    
+    
+    
+    
+    
     public static LinkedHashMap<String, String[]> loadContents(File file){
         LinkedHashMap<String, String[]> userInfo = new LinkedHashMap<String, String[]>();
         try{
@@ -226,6 +294,7 @@ public class Game extends PApplet{
                             kingdoms.get(i).setInvisible();
                         }
                     }
+                    
                 } else{
                     userInfo.put(content[0], new String[]{content[1], content[2]});
                 }
@@ -235,6 +304,14 @@ public class Game extends PApplet{
         }
         return userInfo;
     }
+    
+    
+    
+    
+    
+    
+    
+    
     public static void exitGame(){
         try{
             FileWriter fw = new FileWriter("users.csv", false);
@@ -253,6 +330,14 @@ public class Game extends PApplet{
         }
        
     }
+    
+    
+    
+    
+    
+    
+    
+    
     public void setupKingdom(File file){
         ArrayList<Event> events = new ArrayList<Event>();
         ArrayList<PImage> imagesBefore = new ArrayList<PImage>(), imagesAfter = new ArrayList<PImage>();
@@ -273,7 +358,7 @@ public class Game extends PApplet{
                     imagesAfter.add(null);
                 }
                 int numControllable = 0;
-                if (action == Action.DRAG || action == Action.MOVE){
+                if (action == Action.MOVE){
                     int arraySize = Integer.parseInt(contents[3]);
                     int[] centerPositions;
                     SketchObject[] objects = new SketchObject[arraySize];
