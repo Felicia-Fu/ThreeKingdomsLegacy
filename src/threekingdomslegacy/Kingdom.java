@@ -40,7 +40,13 @@ public class Kingdom extends SketchObject{
                     object.draw();
                 }
             }
-        if (triggered) app.text(keyPoints.get(stage).getDescription(), app.width/2, app.height/2 + 100);
+        if (triggered){
+            app.textAlign(PApplet.CORNER);
+            app.fill(255);
+            app.rect(50, 350, app.width - 375, 150);
+            app.fill(0);
+            app.text(keyPoints.get(stage).getDescription(), 75, 375, app.width - 425, 100);
+        }
     }
     public void updateStatus(Status status){
         this.status = status;

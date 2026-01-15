@@ -4,7 +4,7 @@ package threekingdomslegacy;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
+import processing.core.PApplet;
 /**
  *
  * @author FFC03
@@ -16,7 +16,8 @@ public class DynamicTrigger extends Trigger{
         this.centerPositions = centerPositions;
     }
     public void trigger(){
-        boolean previousNull = false;
+        if (!triggered){
+            boolean previousNull = false;
         int numValid = 0;
         for (SketchObject object : objects){
             if (object.getControllable()){
@@ -42,6 +43,7 @@ public class DynamicTrigger extends Trigger{
             triggered = true;
         } else{
             triggered = false;
+        }
         }
     }
     

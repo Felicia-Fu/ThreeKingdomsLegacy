@@ -62,7 +62,7 @@ public class SketchObject {
     }
     public void updateControllable(boolean controllable){
         this.controllable = controllable;
-        this.speed = controllable ? speed : 0;
+        this.speed = controllable ? DEFAULT_SPEED : 0;
     }
     public boolean getControllable(){
         return controllable;

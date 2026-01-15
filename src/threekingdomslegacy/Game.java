@@ -41,7 +41,7 @@ public class Game extends PApplet{
         titleFont = createFont("fonts/rogenz.otf", 120);
         subtitleFont = createFont("fonts/rogenz.otf", 50);
         contentFont = createFont("fonts/rogenz.otf", 25);
-        descriptionFont = createFont("fonts/rogenz.otf", 10);
+        descriptionFont = createFont("fonts/rogenz.otf", 15);
         stage = -1;
         this.setupKingdom(new File("Shu.tsv"));
         this.setupKingdom(new File("Wei.tsv"));
@@ -50,7 +50,7 @@ public class Game extends PApplet{
         
     }
     public void draw(){
-        //System.out.println(mouseX + " " + mouseY);
+        System.out.println(mouseX + " " + mouseY);
         //imageMode(CENTER);
 //        PImage backgroundImage = loadImage("images/wei/birth_before.png");
 //        backgroundImage.resize(backgroundImage.pixelWidth * backgroundImage.pixelHeight/screenHeight, screenHeight);
@@ -101,13 +101,13 @@ public class Game extends PApplet{
                 textFont(descriptionFont);
                 textAlign(CENTER);
                 kingdom.draw();
-                if (chosenObject != null) chosenObject.move();
                 currentTrigger = currentEvent.getTrigger();
                 if (currentTrigger instanceof DynamicTrigger){
                     ((DynamicTrigger) currentTrigger).trigger();
                 } else{
                     ((StationaryTrigger) currentTrigger).trigger(numClicks);
                 }
+                if (chosenObject != null) chosenObject.move();
                 break;
             case 3:
                 background(255);
@@ -133,9 +133,11 @@ public class Game extends PApplet{
         if (stage == -1 && mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight/2 + 74 * 3 / 2 && mouseY > screenHeight/2 + 74/2){
             background(255);
             stage = 0;
+            
         }  
         if (stage == 1){
             background(255);
+            numClicks = 0;
             chosenKingdom = kingdomName[index];
             userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE), chosenKingdom, "0"});
             kingdom = kingdoms.get(index);
@@ -148,9 +150,16 @@ public class Game extends PApplet{
                 }
             }
             stage = 2;
+            return;
         }
-        if (stage == 2){
-            if (currentTrigger.getAction() == Action.MOVE){
+        if (stage >= 2){
+            if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
+            background(255);
+            userInfo.put(username, new String[]{password, Integer.toString(stage)});
+            exitGame();
+            exit();
+        } else{
+                if (currentTrigger.getAction() == Action.MOVE){
                 SketchObject[] objects = currentTrigger.getObjects();
                 for (SketchObject object: objects){
                     if (mouseX > object.x - object.image.width / 2 && mouseX < object.x + object.image.width / 2 && mouseY > object.y - object.image.height / 2 && mouseY < object.y + object.image.height/2){
@@ -176,14 +185,11 @@ public class Game extends PApplet{
                     currentTrigger = currentEvent.getTrigger();
                     numClicks = 0;
             }
+            }
+            
             
         }
-        if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
-            background(255);
-            userInfo.put(username, new String[]{password, Integer.toString(stage)});
-            exitGame();
-            exit();
-        }  
+         
     }
     
     
