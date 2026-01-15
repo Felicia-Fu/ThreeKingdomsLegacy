@@ -11,13 +11,24 @@ package threekingdomslegacy;
 public class StationaryTrigger extends Trigger{
     public int mouseCenterX, mouseCenterY;
     private int counter;
-    public StationaryTrigger(Action action, int horizontalOffset, int verticalOffset, int mouseCenterX, int mouseCenterY, int counter){
+    private int currentCount;
+    public StationaryTrigger(Action action, int horizontalOffset, int verticalOffset, int mouseCenterX, int mouseCenterY, int counter, int currentCount){
         super(action, horizontalOffset, verticalOffset);
         this.mouseCenterX = mouseCenterX;
         this.mouseCenterY = mouseCenterY;
         this.counter = counter;
+        this.currentCount = currentCount;
     }
-    public void trigger(int currentCount){
+    public void trigger(){
         triggered = currentCount == counter;
+    }
+    public void updateCurrentCount(){
+        currentCount ++;
+    }
+    public int getCurrentCount(){
+        return currentCount;
+    }
+    public int getCounter(){
+        return counter;
     }
 }

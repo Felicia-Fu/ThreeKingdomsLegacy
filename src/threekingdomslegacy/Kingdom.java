@@ -43,9 +43,9 @@ public class Kingdom extends SketchObject{
         if (triggered){
             app.textAlign(PApplet.CORNER);
             app.fill(255);
-            app.rect(50, 350, app.width - 375, 150);
+            app.rect(50, 300, app.width - 400, 200);
             app.fill(0);
-            app.text(keyPoints.get(stage).getDescription(), 75, 375, app.width - 425, 100);
+            app.text(keyPoints.get(stage).getDescription(), 75, 325, app.width - 450, 150);
         }
     }
     public void updateStatus(Status status){
@@ -56,6 +56,7 @@ public class Kingdom extends SketchObject{
     }
     public void setChosen(){
         this.chosen = true;
+        this.visible = true;
     }
     public void setInvisible(){
         this.visible = false;

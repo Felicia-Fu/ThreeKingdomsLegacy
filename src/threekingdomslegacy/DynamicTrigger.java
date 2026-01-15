@@ -18,32 +18,32 @@ public class DynamicTrigger extends Trigger{
     public void trigger(){
         if (!triggered){
             boolean previousNull = false;
-        int numValid = 0;
-        for (SketchObject object : objects){
-            if (object.getControllable()){
-                numValid ++;
-            }
-        }
-        if (centerPositions.length / 2 == numValid){
-            for (int i = 0; i < objects.length; i ++){
-                if (objects[i].getControllable()){
-                    int centerPositionX = centerPositions[!previousNull ? (2 * i) : (2 * (i - 1))];
-                    int centerPositionY = centerPositions[!previousNull ? (2 * i + 1) : (2 * (i - 1) + 1)];
-                    previousNull = false;
-                    boolean yWithinRange = (objects[i].y > centerPositionY - verticalOffset) && (objects[i].y < centerPositionY + verticalOffset);
-                    boolean xWithinRange = (objects[i].x > centerPositionX - horizontalOffset) && (objects[i].x < centerPositionX + horizontalOffset);
-                    if (!yWithinRange || !xWithinRange){
-                        triggered = false;
-                        return;
-                    }
-                } else{
-                    previousNull = true;
+            int numValid = 0;
+            for (SketchObject object : objects){
+                if (object.getControllable()){
+                    numValid ++;
                 }
             }
-            triggered = true;
-        } else{
-            triggered = false;
-        }
+            if (centerPositions.length / 2 == numValid){
+                for (int i = 0; i < objects.length; i ++){
+                    if (objects[i].getControllable()){
+                        int centerPositionX = centerPositions[!previousNull ? (2 * i) : (2 * (i - 1))];
+                        int centerPositionY = centerPositions[!previousNull ? (2 * i + 1) : (2 * (i - 1) + 1)];
+                        previousNull = false;
+                        boolean yWithinRange = (objects[i].y > centerPositionY - verticalOffset) && (objects[i].y < centerPositionY + verticalOffset);
+                        boolean xWithinRange = (objects[i].x > centerPositionX - horizontalOffset) && (objects[i].x < centerPositionX + horizontalOffset);
+                        if (!yWithinRange || !xWithinRange){
+                             triggered = false;
+                            return;
+                        }
+                    } else{
+                        previousNull = true;
+                    }
+                }
+                triggered = true;
+            } else{
+                triggered = false;
+            }
         }
     }
     

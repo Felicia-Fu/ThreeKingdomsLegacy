@@ -30,7 +30,6 @@ public class Game extends PApplet{
     private SketchObject chosenObject = null;
     private static Event currentEvent;
     private Trigger currentTrigger;
-    private int numClicks = 0;
     private static Kingdom kingdom;
             
     public void settings(){
@@ -41,7 +40,7 @@ public class Game extends PApplet{
         titleFont = createFont("fonts/rogenz.otf", 120);
         subtitleFont = createFont("fonts/rogenz.otf", 50);
         contentFont = createFont("fonts/rogenz.otf", 25);
-        descriptionFont = createFont("fonts/rogenz.otf", 15);
+        descriptionFont = createFont("fonts/rogenz.otf", 17);
         stage = -1;
         this.setupKingdom(new File("Shu.tsv"));
         this.setupKingdom(new File("Wei.tsv"));
@@ -50,11 +49,6 @@ public class Game extends PApplet{
         
     }
     public void draw(){
-        System.out.println(mouseX + " " + mouseY);
-        //imageMode(CENTER);
-//        PImage backgroundImage = loadImage("images/wei/birth_before.png");
-//        backgroundImage.resize(backgroundImage.pixelWidth * backgroundImage.pixelHeight/screenHeight, screenHeight);
-//        image(backgroundImage, screenWidth/2, screenHeight/2);
         switch (stage){
             case -1:
                 fill(255, 0, 0);
@@ -85,9 +79,15 @@ public class Game extends PApplet{
                         text("Wrong password entered", screenWidth/2, screenHeight/2);
                     }
                 }
+                fill(255, 0, 0);
+                textAlign(CENTER);
+                text("Press ENTER after finishing entering please", screenWidth / 2, screenHeight/2 + 150);
                 break;
             case 1:
                 background(255);
+                fill(0);
+                textFont(contentFont);
+                text("Pick a kingdom to learn about below: ", screenWidth / 2 - 100, screenHeight / 2 - 200);
                 String texts = kingdomName[index];
                 String imagePathway = "images/" + texts.toLowerCase() + ".png";
                 PImage map = loadImage(imagePathway);
@@ -102,25 +102,67 @@ public class Game extends PApplet{
                 textAlign(CENTER);
                 kingdom.draw();
                 currentTrigger = currentEvent.getTrigger();
-                if (currentTrigger instanceof DynamicTrigger){
-                    ((DynamicTrigger) currentTrigger).trigger();
-                } else{
-                    ((StationaryTrigger) currentTrigger).trigger(numClicks);
+                if (!currentTrigger.getTriggered()){
+                    if (currentTrigger instanceof DynamicTrigger){
+                        DynamicTrigger t = (DynamicTrigger) currentTrigger;
+                        for (SketchObject object: t.getObjects()){
+                            if (object.getControllable() && mouseX < object.x + object.image.width / 2 && mouseX > object.x - object.image.width / 2
+                                    && mouseY < object.y + object.image.height / 2 && mouseY > object.y - object.image.height / 2){
+                                fill(255);
+                                rectMode(CENTER);
+                                rect(object.x - 5, object.y - 5, 90, 32);
+                                fill(0);
+                                text("Move ME!", object.x, object.y, 80, 17);
+                            }
+                        }
+                        t.trigger();
+                    } else{
+                        StationaryTrigger t = (StationaryTrigger) currentTrigger;
+                        if (mouseX < t.mouseCenterX + t.horizontalOffset && mouseX >  t.mouseCenterX - t.horizontalOffset
+                                    && mouseY <  t.mouseCenterY + t.verticalOffset && mouseY >  t.mouseCenterY - t.verticalOffset){
+                                fill(255);
+                                rectMode(CENTER);
+                                rect(t.mouseCenterX - 5, t.mouseCenterY - 5, 170, 37);
+                                fill(0);
+                                int difference = t.getCounter() - t.getCurrentCount();
+                                if (difference > 0){
+                                    String str = "Click ME " + difference + (difference > 1 ? " times!" : " time!");
+                                    text(str, t.mouseCenterX, t.mouseCenterY, 165, 17);
+                                }
+                                
+                            }
+                        t.trigger();
+                    }
                 }
                 if (chosenObject != null) chosenObject.move();
+                fill(23, 100, 100);
+                rectMode(CORNER);
+                rect(screenWidth - 225, screenHeight - 80, 200, 74);
+                fill(0);
+                textAlign(CENTER);
+                textFont(subtitleFont);
+                text("Exit", screenWidth - 125, screenHeight - 28); 
                 break;
             case 3:
                 background(255);
-                
-                
-        }
-        if (stage > 0){
-            fill(23, 100, 100);
-            rect(screenWidth - 225, screenHeight - 80, 200, 74);
-            fill(0);
-            textAlign(CENTER);
-            textFont(subtitleFont);
-            text("Exit", screenWidth - 125, screenHeight - 28); 
+                fill(0);
+                textFont(contentFont);
+                text("The brief story of " + chosenKingdom + " is over. Please choose one of the options below.", screenWidth/2 - 25, 75, screenWidth - 50, 100);
+                fill(23, 100, 100);
+                rectMode(CENTER);
+                rect(screenWidth/2 - 120, screenHeight/2, 190, 74);
+                fill(0);
+                textAlign(CENTER);
+                textFont(subtitleFont);
+                text("Restart", screenWidth/2 - 120, screenHeight/2 + 39 / 2); 
+                fill(23, 100, 100);
+                rectMode(CENTER);
+                rect(screenWidth/2 + 100, screenHeight/2, 150, 74);
+                fill(0);
+                textAlign(CENTER);
+                textFont(subtitleFont);
+                text("Exit", screenWidth/2 + 100, screenHeight/2 + 39 / 2); 
+                break;
         }
     }
     
@@ -130,66 +172,74 @@ public class Game extends PApplet{
     
     
     public void mousePressed(){
-        if (stage == -1 && mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight/2 + 74 * 3 / 2 && mouseY > screenHeight/2 + 74/2){
-            background(255);
-            stage = 0;
-            
-        }  
-        if (stage == 1){
-            background(255);
-            numClicks = 0;
-            chosenKingdom = kingdomName[index];
-            userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE), chosenKingdom, "0"});
-            kingdom = kingdoms.get(index);
-            kingdom.setChosen();
-            currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
-            currentTrigger = currentEvent.getTrigger();
-            for (int i = 0; i < 3; i ++){
-                if (i != index){
-                    kingdoms.get(i).setInvisible();
-                }
-            }
-            stage = 2;
-            return;
-        }
-        if (stage >= 2){
-            if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
-            background(255);
-            userInfo.put(username, new String[]{password, Integer.toString(stage)});
-            exitGame();
-            exit();
-        } else{
-                if (currentTrigger.getAction() == Action.MOVE){
-                SketchObject[] objects = currentTrigger.getObjects();
-                for (SketchObject object: objects){
-                    if (mouseX > object.x - object.image.width / 2 && mouseX < object.x + object.image.width / 2 && mouseY > object.y - object.image.height / 2 && mouseY < object.y + object.image.height/2){
-                        object.updateClicked();
-                        chosenObject = object; 
-                        break;
+        switch (stage){
+            case -1:
+                if (mouseX < screenWidth/2 + 100 && mouseX > screenWidth/2 - 100 && mouseY < screenHeight/2 + 74 * 3 / 2 && mouseY > screenHeight/2 + 74/2){
+                    background(255);
+                    stage = 0;
+                } 
+                break;
+            case 1:
+                background(255);
+                chosenKingdom = kingdomName[index];
+                userInfo.put(username, new String[]{password, Integer.toString(DEFAULT_STAGE), chosenKingdom, "0"});
+                kingdom = kingdoms.get(index);
+                kingdom.setChosen();
+                currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
+                currentTrigger = currentEvent.getTrigger();
+                for (int i = 0; i < 3; i ++){
+                    if (i != index){
+                        kingdoms.get(i).setInvisible();
                     }
                 }
-                for (SketchObject object: objects){
-                    if (object != chosenObject){
-                        object.resetClicked();
+                stage = 2;
+                break;
+            case 2:
+                if (mouseX < screenWidth - 25 && mouseX > screenWidth - 225 && mouseY < screenHeight - 6 && mouseY > screenHeight - 80){
+                    background(255);
+                    userInfo.put(username, new String[]{password, Integer.toString(stage)});
+                    exitGame();
+                    exit();
+                } else{
+                    if (currentTrigger.getAction() == Action.MOVE){
+                        SketchObject[] objects = currentTrigger.getObjects();
+                        for (SketchObject object: objects){
+                            if (mouseX > object.x - object.image.width / 2 && mouseX < object.x + object.image.width / 2 && mouseY > object.y - object.image.height / 2 && mouseY < object.y + object.image.height/2){
+                                object.updateClicked();
+                                chosenObject = object; 
+                                break;
+                            }
+                        }
+                        for (SketchObject object: objects){
+                            if (object != chosenObject){
+                                object.resetClicked();
+                            }
+                        }
+                    } else{
+                        StationaryTrigger trigger = (StationaryTrigger) currentTrigger;
+                        if (mouseX > trigger.mouseCenterX - trigger.horizontalOffset && mouseX < trigger.mouseCenterX + trigger.horizontalOffset && mouseY > trigger.mouseCenterY - trigger.verticalOffset && mouseY < trigger.mouseCenterY + trigger.verticalOffset){
+                            trigger.updateCurrentCount();
+                        }
+                    }
+                    if (currentTrigger.getTriggered()){
+                        updateObject(kingdom, false);
+                        currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
+                        currentTrigger = currentEvent.getTrigger();
                     }
                 }
-            } else{
-                StationaryTrigger trigger = (StationaryTrigger) currentTrigger;
-                if (mouseX > trigger.mouseCenterX - trigger.horizontalOffset && mouseX < trigger.mouseCenterX + trigger.horizontalOffset && mouseY > trigger.mouseCenterY - trigger.verticalOffset && mouseY < trigger.mouseCenterY + trigger.verticalOffset){
-                    numClicks ++;
+                break;
+            case 3:
+                if (mouseX < screenWidth/2 - 25 && mouseX > screenWidth/2 - 215 && mouseY < screenHeight/2 + 39 && mouseY > screenHeight / 2 - 39){
+                    stage = 1;
+                    index = 0;
+                } else if (mouseX > screenWidth/2 + 25 && mouseX < screenWidth/2 + 175 && mouseY < screenHeight/2 + 39 && mouseY > screenHeight / 2 - 39){
+                    background(255);
+                    userInfo.put(username, new String[]{password, Integer.toString(stage)});
+                    exitGame();
+                    exit();
                 }
-            }
-            if (currentTrigger.getTriggered()){
-                    updateObject(kingdom, false);
-                    currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
-                    currentTrigger = currentEvent.getTrigger();
-                    numClicks = 0;
-            }
-            }
-            
-            
+                break;
         }
-         
     }
     
     
@@ -225,7 +275,7 @@ public class Game extends PApplet{
                         if (userInfo.containsKey(username)){
                             if (password.equals(userInfo.get(username)[0])){
                                 stage = Integer.parseInt(userInfo.get(username)[1]);
-                                if (stage > 1){
+                                if (stage == 2){
                                     chosenKingdom = userInfo.get(username)[2];
                                     int chosenIndex = Arrays.asList(kingdomName).indexOf(chosenKingdom);
                                     kingdom = kingdoms.get(chosenIndex);
@@ -309,10 +359,10 @@ public class Game extends PApplet{
             Scanner scan = new Scanner(file);
             while (scan.hasNextLine()){
                 String[] content = scan.nextLine().split(",");
-                if (Integer.parseInt(content[2]) > 1){
+                if (Integer.parseInt(content[2]) == 2){
                     userInfo.put(content[0], new String[]{content[1], content[2], content[3], content[4]});
                 } else{
-                    userInfo.put(content[0], new String[]{content[1], content[2]});
+                    userInfo.put(content[0], new String[]{content[1], (Integer.parseInt(content[2]) == 3 ? Integer.toString(1) : content[2])});
                 }
             }
         } catch(FileNotFoundException e){
@@ -334,9 +384,9 @@ public class Game extends PApplet{
             PrintWriter pw = new PrintWriter(fw);
             userInfo.forEach((key, value) -> {
                 if (!key.equals(username)){
-                    pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) > 1 ? ("," + value[2] + "," + value[3]) : ""));
+                    pw.println(key + "," + value[0] + "," + value[1] + (Integer.parseInt(value[1]) == 2 ? ("," + value[2] + "," + value[3]) : ""));
                 } else{
-                    pw.println(username + "," + password + "," + stage + (stage > 1 ? ("," + chosenKingdom + "," + kingdom.getCurrentStatusIndex()) : ""));
+                    pw.println(username + "," + password + "," + stage + (stage == 2 ? ("," + chosenKingdom + "," + kingdom.getCurrentStatusIndex()) : ""));
                 }
                 
             });
@@ -404,7 +454,7 @@ public class Game extends PApplet{
                     int horizontalOffset = Integer.parseInt(contents[6]);
                     int verticalOffset = 7 < contents.length - 1 ? Integer.parseInt(contents[7]) : horizontalOffset;
                     String description = contents[contents.length - 1];
-                    events.add(new Event(new StationaryTrigger(action, horizontalOffset, verticalOffset, mouseCenterX, mouseCenterY, counter), description));
+                    events.add(new Event(new StationaryTrigger(action, horizontalOffset, verticalOffset, mouseCenterX, mouseCenterY, counter, 0), description));
                 } 
             }
         } catch (FileNotFoundException e){
