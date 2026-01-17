@@ -4,10 +4,7 @@
  */
 package threekingdomslegacy;
 
-/**
- *
- * @author FFC03
- */
+//This enum defines a group of fixed possible actions to the objects
 public enum Action {
     CLICK,
     MOVE

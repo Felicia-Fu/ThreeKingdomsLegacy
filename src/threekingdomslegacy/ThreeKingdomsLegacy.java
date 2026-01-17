@@ -14,7 +14,7 @@ public class ThreeKingdomsLegacy {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        //Sketches on the screen
         Game.main("threekingdomslegacy.Game");
     }
     

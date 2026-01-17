@@ -4,10 +4,7 @@
  */
 package threekingdomslegacy;
 
-/**
- *
- * @author FFC03
- */
+//This enum defines a group of fixed status a kingdom would go through in the game
 public enum Status {
     BIRTH,
     RISING,
