@@ -34,7 +34,6 @@ public class Game extends PApplet{
     private static Kingdom kingdom;
             
     public void settings(){
-        //Set the size of the screen
         size(screenWidth, screenHeight);
     }
     public void setup(){
@@ -145,7 +144,6 @@ public class Game extends PApplet{
                         if (mouseX < t.mouseCenterX + t.horizontalOffset && mouseX >  t.mouseCenterX - t.horizontalOffset
                                     && mouseY <  t.mouseCenterY + t.verticalOffset && mouseY >  t.mouseCenterY - t.verticalOffset){
                                 fill(255);
-                                //Defines that the coordinates inputted for rect() is the center of the rectangle rather than corner
                                 rectMode(CENTER);
                                 rect(t.mouseCenterX - 5, t.mouseCenterY - 5, 170, 37);
                                 fill(0);
@@ -164,7 +162,6 @@ public class Game extends PApplet{
                 if (chosenObject != null) chosenObject.move();
                 //Draw the exit box so that the user can pause whenever they want in this stage
                 fill(23, 100, 100);
-                //Defines that the coordinates inputted for rect() is the center of the rectangle
                 rectMode(CORNER);
                 rect(screenWidth - 225, screenHeight - 80, 200, 74);
                 fill(0);
@@ -182,22 +179,18 @@ public class Game extends PApplet{
                 text("The brief story of " + chosenKingdom + " is over. Please choose one of the options below.", screenWidth/2 - 25, 75, screenWidth - 50, 100);
                 //Draw the restart box on the screen
                 fill(23, 100, 100);
-                //Defines that the coordinates inputted for rect() is the center of the rectangle
                 rectMode(CENTER);
                 rect(screenWidth/2 - 120, screenHeight/2, 190, 74);
                 fill(0);
-                //Defines that the text is aligned to the center of the textbox
                 textAlign(CENTER);
                 textFont(subtitleFont);
                 text("Restart", screenWidth/2 - 120, screenHeight/2 + 39 / 2); 
                 
                 //Draw the exit box on the screen
                 fill(23, 100, 100);
-                //Defines that the coordinates inputted for rect() is the center of the rectangle
                 rectMode(CENTER);
                 rect(screenWidth/2 + 100, screenHeight/2, 150, 74);
                 fill(0);
-                //Defines that the text is aligned to the center of the textbox
                 textAlign(CENTER);
                 textFont(subtitleFont);
                 text("Exit", screenWidth/2 + 100, screenHeight/2 + 39 / 2); 

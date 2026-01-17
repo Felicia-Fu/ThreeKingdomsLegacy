@@ -5,7 +5,7 @@
 package threekingdomslegacy;
 
 /**
- *
+ * 
  * @author FFC03
  */
 public class StationaryTrigger extends Trigger{
