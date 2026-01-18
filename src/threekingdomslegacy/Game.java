@@ -436,7 +436,8 @@ public class Game extends PApplet{
                 String[] content = scan.nextLine().split(",");
                 //If the last stage this account is at is 2, meaning they've already chosen a kingdom and started to learn about their story
                 if (Integer.parseInt(content[2]) == 2){
-                    //Append the password, the stage, the chosen kingdom and the last status of the kingdom they've viewed to the LinkedHashMap along with the username
+                    //Append the password, the stage, the chosen kingdom and the last status of the kingdom they've viewed to the 
+                    //LinkedHashMap along with the username
                     users.put(content[0], new String[]{content[1], content[2], content[3], content[4]});
                 //Otherwise, append only the password and the stage to the LinkedHashMap under the username
                 } else{

@@ -16,8 +16,8 @@ public class SketchObject {
     public PApplet app;
     private boolean controllable;
     private int speed;
-    private static final int DEFAULT_SPEED = 5;
     private int sizeFactor;
+    private static final int DEFAULT_SPEED = 5;
     private static final int DEFAULT_SIZE_FACTOR = 80;
     private boolean clicked;
     
