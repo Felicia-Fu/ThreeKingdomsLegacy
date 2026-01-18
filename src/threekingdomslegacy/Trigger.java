@@ -51,20 +51,4 @@ public class Trigger {
     public Action getAction(){
         return action;
     }
-    
-    /**
-     * Allow triggered variable to be accessed in other classes
-     * @return boolean triggered
-     */
-    public boolean getTriggered(){
-        return triggered;
-    }
-    
-    /**
-     * Allow objects array to be accessed in other classes
-     * @return SketchObject[] objects
-     */
-    public SketchObject[] getObjects(){
-        return objects;
-    }
 }

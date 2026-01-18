@@ -120,12 +120,12 @@ public class Game extends PApplet{
                 kingdom.draw();
                 currentTrigger = currentEvent.getTrigger();
                 //If the user hasn't completed the required interactions...
-                if (!currentTrigger.getTriggered()){
+                if (!currentTrigger.triggered){
                     //If the trigger is an instance of DynamicTrigger...
                     if (currentTrigger instanceof DynamicTrigger){
                         //If the mouse is on the images of the objects that are involved in the interaction, draw a box with instructions in its center
                         DynamicTrigger t = (DynamicTrigger) currentTrigger;
-                        for (SketchObject object: t.getObjects()){
+                        for (SketchObject object: t.objects){
                             if (object.getControllable() && mouseX < object.x + object.image.width / 2 && mouseX > object.x - object.image.width / 2
                                     && mouseY < object.y + object.image.height / 2 && mouseY > object.y - object.image.height / 2){
                                 fill(255);
@@ -242,7 +242,7 @@ public class Game extends PApplet{
                     //If the user is asked to move objects to their desired positions, if a mouse is clicked on any of the objects, that object will be chosen
                     //Only the chosen object can be moved and the others will be set to not chosen
                     if (currentTrigger.getAction() == Action.MOVE){
-                        SketchObject[] objects = currentTrigger.getObjects();
+                        SketchObject[] objects = currentTrigger.objects;
                         for (SketchObject object: objects){
                             if (mouseX > object.x - object.image.width / 2 && mouseX < object.x + object.image.width / 2 && mouseY > object.y - object.image.height / 2 && mouseY < object.y + object.image.height/2){
                                 object.updateClicked();
@@ -264,7 +264,7 @@ public class Game extends PApplet{
                     }
                     //If the trigger has been triggered, updateObject() is called on the kingdom object.
                     //Event and Trigger objects will be updated correspondingly
-                    if (currentTrigger.getTriggered()){
+                    if (currentTrigger.triggered){
                         updateObject(kingdom, false);
                         currentEvent = kingdom.getEvents().get(kingdom.getCurrentStatusIndex());
                         currentTrigger = currentEvent.getTrigger();

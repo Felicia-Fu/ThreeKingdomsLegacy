@@ -44,7 +44,7 @@ public class Kingdom extends SketchObject{
         PImage displayedImage;
         int stage = status.ordinal();
         Trigger trigger = keyPoints.get(stage).getTrigger();
-        boolean triggered = trigger.getTriggered();
+        boolean triggered = trigger.triggered;
         
         //Decides what image will be drawn on the screen as the following:
         //If the kingdom is visible ->
@@ -70,7 +70,7 @@ public class Kingdom extends SketchObject{
         //If the interaction is to move objects to a certain postiion and the user hasn't completed the interactions required, 
         //draw all objects that are involved in the interaction on the screen along with the background image
         if (trigger.getAction() == Action.MOVE && !triggered){
-            for (SketchObject object: trigger.getObjects()){
+            for (SketchObject object: trigger.objects){
                 object.draw();
             }
         }
