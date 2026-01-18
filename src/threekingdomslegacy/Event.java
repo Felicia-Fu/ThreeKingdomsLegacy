@@ -9,7 +9,7 @@ package threekingdomslegacy;
  * @author FFC03
  */
 public class Event {
-    //Class objects
+    //Class variables
     private Trigger trigger;
     private String description;
     

@@ -62,7 +62,7 @@ public class DynamicTrigger extends Trigger{
                         boolean xWithinRange = (objects[i].x > centerPositionX - horizontalOffset) && (objects[i].x < centerPositionX + horizontalOffset);
                         //If either x or y is not in the range, set triggered to false and return right away
                         if (!yWithinRange || !xWithinRange){
-                             triggered = false;
+                            triggered = false;
                             return;
                         }
                     //If the object at the index is not controllable, set previousNull to true and increment prevInvalid by 1
